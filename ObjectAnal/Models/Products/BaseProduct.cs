@@ -1,4 +1,4 @@
-﻿namespace Business.Models;
+﻿namespace Business.Models.Products;
 
 public abstract class BaseProduct
 {
@@ -6,10 +6,4 @@ public abstract class BaseProduct
     public string ProductName { get; set; } = null!;
     public string ProductPrice { get; set; } = null!;
 
-}
-
-
-public class WishlistProduct : BaseProduct
-{
-    public bool Visible { get; set; } = true;
 }

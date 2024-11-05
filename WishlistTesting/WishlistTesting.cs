@@ -8,10 +8,14 @@ public class WishlistTesting
     Need a product with a "visible" property that is a bool that the admin will change.
     Need a list of products. 
     Need a list of things inside a wishlist.
-    -
-    A method that will check for visible products and return a list to the method that "shows the list to the user"..
-    -
-    A wishlistProduct that can be used.
+
+    - Methods;  (Focus on single responsibility)
+    CheckVisibility(UserWishlist) return ShowList
+
+    - Models;
+    Product + WishlistProduct
+    Response + WishlistResponse
+
 
      */
     [Fact]
