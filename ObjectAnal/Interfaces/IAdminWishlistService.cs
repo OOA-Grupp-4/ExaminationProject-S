@@ -2,7 +2,7 @@
 
 public interface IAdminWishlistService
 {
-    public void ChangeProduct(string productId)
+    public void ChangeProductVisibility(string productId)
     {
     }
 }

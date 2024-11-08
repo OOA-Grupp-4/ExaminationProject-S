@@ -1,4 +1,8 @@
-﻿namespace WishlistTesting;
+﻿using Business.Interfaces;
+using Business.Models.Products;
+using Business.Services;
+
+namespace WishlistTesting;
 
 public class WishlistTesting
 {
@@ -18,24 +22,42 @@ public class WishlistTesting
 
 
      */
+
+    private readonly IWishlistService _wishlistService;
+    public WishlistTesting()
+    {
+        _wishlistService = new WishlistService();
+    }
+
+    private List<WishlistProduct> ValidWishlistProducts()
+    {
+        return new List<WishlistProduct>
+        {
+        new WishlistProduct { ProductId = "1", ProductName = "Tomato", ProductPrice = "10", Visible = true },
+        new WishlistProduct { ProductId = "2", ProductName = "Banana", ProductPrice = "15", Visible = true },
+        new WishlistProduct { ProductId = "3", ProductName = "Apple", ProductPrice = "20", Visible = true },
+        new WishlistProduct { ProductId = "4", ProductName = "Apple", ProductPrice = "20", Visible = false }
+        };
+    }
+
+    //Send list to checker which returns a smaller list.
     [Fact]
-    public void AdminChangeVisibility_ShouldReturnSmallerList()
+    public void VisibilityCheck_ShouldReturnSmallerList()
     {
         //Arrange
-
-
+        var _validWishlistProducts = ValidWishlistProducts();
 
         //Act
-
+        var _testingList = _wishlistService.VisibilityCheck(_validWishlistProducts);
 
 
         //Assert
-
+        Assert.True(_validWishlistProducts.Count() > _testingList.Count());
 
 
     }
     [Fact]
-    public void AdminChangeVisibility_ShouldReturnALongerList()
+    public void VisibilityCheck_ShouldReturnALongerList()
     {
 
     }
