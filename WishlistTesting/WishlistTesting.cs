@@ -1,64 +1,77 @@
 ﻿using Business.Interfaces;
 using Business.Models.Products;
 using Business.Services;
+using Moq;
 
 namespace WishlistTesting;
 
 public class WishlistTesting
 {
-    /*
-    First test is to make sure that if the admin hides a product from the site, it should not show up in peoples wishlist.
-    -
-    Need a product with a "visible" property that is a bool that the admin will change.
-    Need a list of products. 
-    Need a list of things inside a wishlist.
-
-    - Methods;  (Focus on single responsibility)
-    CheckVisibility(UserWishlist) return ShowList
-
-    - Models;
-    Product + WishlistProduct
-    Response + WishlistResponse
-
-
-     */
-
     private readonly IWishlistService _wishlistService;
+    private List<WishlistProduct> _currentProductsOnSite;
+    
     public WishlistTesting()
     {
         _wishlistService = new WishlistService();
+        _currentProductsOnSite = [];
     }
 
-    private List<WishlistProduct> ValidWishlistProducts()
+    private WishlistProduct CreateTestProduct(string id, string name, string price, bool visible)
     {
-        return new List<WishlistProduct>
+        return new WishlistProduct
         {
-        new WishlistProduct { ProductId = "1", ProductName = "Tomato", ProductPrice = "10", Visible = true },
-        new WishlistProduct { ProductId = "2", ProductName = "Banana", ProductPrice = "15", Visible = true },
-        new WishlistProduct { ProductId = "3", ProductName = "Apple", ProductPrice = "20", Visible = true },
-        new WishlistProduct { ProductId = "4", ProductName = "Apple", ProductPrice = "20", Visible = false }
+            ProductId = id,
+            ProductName = name,
+            ProductPrice = price,
+            Visible = visible
         };
     }
 
-    //Send list to checker which returns a smaller list.
     [Fact]
-    public void VisibilityCheck_ShouldReturnSmallerList()
+    public void GetVisibleProducts_ShouldReturnOnlyVisibleApple()
     {
         //Arrange
-        var _validWishlistProducts = ValidWishlistProducts();
+        _currentProductsOnSite = new List<WishlistProduct>
+        {
+            CreateTestProduct("3e36a463-4a5b-42c5-a4d4-7baf9f4e0e37", "Apple", "20", true),
+            CreateTestProduct("29049a13-f610-4d86-b68f-42cc92de79a4", "Pear", "10", false)
+        };
 
         //Act
-        var _testingList = _wishlistService.VisibilityCheck(_validWishlistProducts);
-
+        var result = _wishlistService.GetVisibleProducts(_currentProductsOnSite);
 
         //Assert
-        Assert.True(_validWishlistProducts.Count() > _testingList.Count());
-
-
+        Assert.True(result.Success);
+        Assert.Single(result.Content);
+        Assert.Contains(result.Content, p => p.ProductName == "Apple");
     }
-    [Fact]
-    public void VisibilityCheck_ShouldReturnALongerList()
-    {
 
+    [Fact]
+    public void GetVisibleProducts_ShouldReturnAllProducts()
+    {
+        //Arrange 
+        _currentProductsOnSite = new List<WishlistProduct>
+        {
+            CreateTestProduct("3e36a463-4a5b-42c5-a4d4-7baf9f4e0e37", "Apple", "20", true),
+            CreateTestProduct("29049a13-f610-4d86-b68f-42cc92de79a4", "Pear", "10", true)
+        };
+
+        //Act
+        var result = _wishlistService.GetVisibleProducts(_currentProductsOnSite);
+
+        //Assert
+        Assert.True(result.Success);
+        Assert.True(result.Content.Count() == 2);
+    }
+
+    [Fact]
+    public void GetVisibleProducts_SendEmptyList_ShouldReturnEmptyListAndTrue()
+    {
+        //Act
+        var result = _wishlistService.GetVisibleProducts(_currentProductsOnSite);
+
+        //Assert
+        Assert.True(result.Success);
+        Assert.Empty(result.Content);
     }
 }

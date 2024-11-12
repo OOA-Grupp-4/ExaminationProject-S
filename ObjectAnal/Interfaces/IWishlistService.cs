@@ -1,8 +1,9 @@
 ﻿using Business.Models.Products;
+using Business.Models.Responses;
 
 namespace Business.Interfaces;
 
 public interface IWishlistService
 {
-    public List<WishlistProduct> VisibilityCheck(List<WishlistProduct> userWishlist);
+    public ResponseWishlist<IEnumerable<WishlistProduct>> GetVisibleProducts(List<WishlistProduct> userWishlist);
 }

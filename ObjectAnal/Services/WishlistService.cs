@@ -1,5 +1,6 @@
 ﻿using Business.Interfaces;
 using Business.Models.Products;
+using Business.Models.Responses;
 namespace Business.Services;
 
 
@@ -12,15 +13,30 @@ public class WishlistService : IWishlistService
         _returnList = [];
     }
 
-    public List<WishlistProduct> VisibilityCheck(List<WishlistProduct> userWishlist)
+    public ResponseWishlist<IEnumerable<WishlistProduct>> GetVisibleProducts(List<WishlistProduct> userWishlist)
     {
-        foreach (var product in userWishlist)
+        try
         {
-            if (product.Visible == true)
+            foreach (var product in userWishlist)
             {
-            _returnList.Add(product);
+                if (product.Visible == true)
+                {
+                    _returnList.Add(product);
+                }
             }
+            return new ResponseWishlist<IEnumerable<WishlistProduct>>
+                { 
+                Success = true,
+                Content = _returnList 
+                };
         }
-        return _returnList;
+        catch (Exception ex)
+        {
+            return new ResponseWishlist<IEnumerable<WishlistProduct>>
+            {
+                Message = ex.Message,
+                Success = false,
+            };
+        }
     }
 }
