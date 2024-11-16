@@ -1,6 +1,7 @@
 ﻿using Business.Interfaces;
 using Business.Models.Products;
 using Business.Models.Responses;
+using Business.Services;
 using Moq;
 
 namespace WishlistTesting;
@@ -8,11 +9,13 @@ namespace WishlistTesting;
 public class MockPackageTesting
 {
     private readonly Mock<ICartService> _mockCartService;
+    private readonly ICartService _cartService;
     private List<CartProduct> _testCartOfProducts;
 
     public MockPackageTesting()
     {
         _mockCartService = new Mock<ICartService>();
+        _cartService = new CartService();
         _testCartOfProducts = [];
     }
 
@@ -28,6 +31,7 @@ public class MockPackageTesting
         };
     }
 
+    #region ---- Mocking tests ----
 
     [Fact]
     public void AddingProduct_ShouldUpdateWeight()
@@ -37,7 +41,7 @@ public class MockPackageTesting
 
         _mockCartService
             .Setup(s => s.AddToCart(It.IsAny<CartProduct>()))
-            .Returns(new CartResponse { Success = true, Message = "Product added successfully." });
+            .Returns(new CartResponse { Success = true });
 
         _testCartOfProducts.Add(testProduct);
 
@@ -101,4 +105,48 @@ public class MockPackageTesting
         Assert.True(resultRemove.Success);
         Assert.Equal(0, resultWeight.Content.Weight);
     }
+    #endregion
+
+    #region ---- Tests after implementing the CartService ----
+    [Fact]
+    public void SeveralProductsInCart_ShouldReturnTrue_AndCorrectWeight()
+    {
+        //Arrange
+        _testCartOfProducts = new List<CartProduct>
+        {
+            CreateCartProduct("", "Tomat", "10", 10, 5),
+            CreateCartProduct("", "Äpple", "10", 10, 2)
+        };
+
+        //Act
+        var result = _cartService.WeightTotalInCart(_testCartOfProducts);
+
+        //Assert
+        Assert.True(result.Success);
+        Assert.Equal(70, result.WeightTotal);
+    }
+
+    [Fact]
+    public void AddingProductInCart_ShouldReturnTrue_AndCorrectWeight()
+    {
+        //Arrange
+        _testCartOfProducts = new List<CartProduct>
+        {
+            CreateCartProduct("4a6697b1-03b4-45ca-9dac-05025f85e78c", "Tomat", "10", 10, 5),
+            CreateCartProduct("cb30f7c0-9ae4-4477-b717-521a05f06d4f", "Äpple", "10", 10, 2)
+        };
+        var productToAdd = CreateCartProduct("c1992b8a-0f53-4d0c-b001-d716ef2a15fa", "Meh", "1", 5, 3);
+
+        //Act
+        var resultOne = _cartService.WeightTotalInCart(_testCartOfProducts);
+        
+        _testCartOfProducts.Add(productToAdd);
+
+        var resultTwo = _cartService.WeightTotalInCart(_testCartOfProducts);
+
+        //Assert
+        Assert.True(resultOne.WeightTotal < resultTwo.WeightTotal);
+        Assert.Equal(resultTwo.WeightTotal, 85);
+    }
+    #endregion
 }
