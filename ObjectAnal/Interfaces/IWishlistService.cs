@@ -5,5 +5,5 @@ namespace Business.Interfaces;
 
 public interface IWishlistService
 {
-    public ResponseWishlist<IEnumerable<WishlistProduct>> GetVisibleProducts(List<WishlistProduct> userWishlist);
+    public ContentResponse<IEnumerable<WishlistProduct>> GetVisibleProducts(List<WishlistProduct> userWishlist);
 }

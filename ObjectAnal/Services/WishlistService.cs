@@ -13,7 +13,7 @@ public class WishlistService : IWishlistService
         _returnList = [];
     }
 
-    public ResponseWishlist<IEnumerable<WishlistProduct>> GetVisibleProducts(List<WishlistProduct> userWishlist)
+    public ContentResponse<IEnumerable<WishlistProduct>> GetVisibleProducts(List<WishlistProduct> userWishlist)
     {
         try
         {
@@ -24,7 +24,7 @@ public class WishlistService : IWishlistService
                     _returnList.Add(product);
                 }
             }
-            return new ResponseWishlist<IEnumerable<WishlistProduct>>
+            return new ContentResponse<IEnumerable<WishlistProduct>>
                 { 
                 Success = true,
                 Content = _returnList 
@@ -32,7 +32,7 @@ public class WishlistService : IWishlistService
         }
         catch (Exception ex)
         {
-            return new ResponseWishlist<IEnumerable<WishlistProduct>>
+            return new ContentResponse<IEnumerable<WishlistProduct>>
             {
                 Message = ex.Message,
                 Success = false,
